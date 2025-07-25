@@ -82,9 +82,9 @@ def load_data_schema(input_str: str | None) -> dict | None:
 
 def handle_clear_path(save_path: Path, file_name: str) -> None:
     """Deletes old files in the save directory that match the base file_name."""
-    logging.info(f"Clear path is on. Deleting files matching '{file_name}*.json' in '{save_path}'...")
+    logging.info(f"Clear path is on. Deleting files matching '{file_name}*.jsonl' in '{save_path}'...")
     deleted_count = 0
-    for file_to_delete in save_path.glob(f"{file_name}*.json"):
+    for file_to_delete in save_path.glob(f"{file_name}*.jsonl"):
         try:
             file_to_delete.unlink()
             logging.debug(f"Deleted file: {file_to_delete}")
@@ -100,13 +100,26 @@ def _generate_filenames(base_name: str, prefix: str, count: int):
         yield f"{base_name}.jsonl"
         return
 
-    for i in range(1, count + 1):
-        if prefix == "count":
+    if prefix == "count":
+        for i in range(1, count + 1):
             yield f"{base_name}_{i}.jsonl"
-        elif prefix == "random":
-            yield f"{base_name}_{random.randint(10000, 99999)}.jsonl"  # noqa: S311
-        elif prefix == "uuid":
-            yield f"{base_name}_{uuid4().hex[:8]}.jsonl"
+
+    elif prefix == "random":
+        max_val = 999_999
+        min_val = 100_000
+
+        while count > (max_val - min_val + 1):
+            max_val = int(str(max_val) + "9")
+            min_val = int(str(min_val) + "0")
+
+        random_numbers = random.sample(range(min_val, max_val + 1), count)
+
+        for num in random_numbers:
+            yield f"{base_name}_{num}.jsonl"  # noqa: S311
+
+    elif prefix == "uuid":
+        for _ in range(count):
+            yield f"{base_name}_{uuid4().hex}.jsonl"
 
 
 def save_results_to_files(

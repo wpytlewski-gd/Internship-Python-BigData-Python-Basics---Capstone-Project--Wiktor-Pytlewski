@@ -142,7 +142,7 @@ class DataGenerator:
             logging.error("Cannot generate data: The DataGenerator was initialized with an invalid schema.")
             return []
 
-        logging.info(f"Generating {num_data} file(s) with {num_workers} worker(s)...")
+        logging.info(f"Generating {num_data} line(s) with {num_workers} worker(s)...")
 
         if num_workers <= 1:
             return [self._generate_one_file() for _ in range(num_data)]

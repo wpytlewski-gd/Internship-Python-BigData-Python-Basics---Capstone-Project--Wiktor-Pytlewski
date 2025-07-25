@@ -29,7 +29,6 @@ def setup_arguments() -> argparse.Namespace:
             "prefix": config.get("DEFAULT", "prefix", fallback="count"),
             "data_schema": config.get("DEFAULT", "data_schema", fallback=None),
             "data_lines": config.getint("DEFAULT", "data_lines", fallback=1),
-            "clear_path": config.getboolean("DEFAULT", "clear_path", fallback=False),
             "workers": config.getint("DEFAULT", "workers", fallback=1),
         }
         logging.info("Successfully loaded default values from default.ini")
@@ -96,6 +95,9 @@ def setup_arguments() -> argparse.Namespace:
 
 def main(args: argparse.Namespace):
     # --- Argument Validation ---
+    if args.data_lines < 0:
+        logging.critical("Error: data_lines cannot be negative.")
+        sys.exit(1)
     if args.file_count < 0:
         logging.critical("Error: file_count cannot be negative.")
         sys.exit(1)
